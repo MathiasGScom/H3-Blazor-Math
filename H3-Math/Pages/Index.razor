@@ -1,0 +1,91 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+<p> @Num1 @operations[opChooser] @Num2 = ?</p>
+<button @onclick="() => UserGuess() ">Submit</button>
+<input @bind-value="UserNum" onkeydown="return event.key != 'Enter';" type="number" />
+<br />
+
+@if (UserHasGuessedCorrect)
+{
+    <p> @UserNum was the correct answer!! </p>
+} else
+{
+    <p> @UserNum was not the correct answer! </p>
+    <p> Psst - det rigtige svar er @result!</p>
+}
+
+<button @onclick="() => NewAssignment() "> New Assignment</button>
+
+@if (!HintUsed){
+    <button @onclick="() => GetHint() "> Get Hint </button>
+} else
+{
+    <p> @hintRange </p>
+}
+
+
+@code{
+    public int UserNum { get; set; }
+
+    public int Num1 = new Random().Next(100);
+    public int Num2 = new Random().Next(100);
+    private bool UserHasGuessedCorrect = false;
+    public string[] operations = new string[] { "+", "-", "*", "/" };
+    public int opChooser = new Random().Next(4);
+    public decimal result = 0;
+    public string hintRange = "";
+    public bool HintUsed = false;
+
+    public void NewAssignment()
+    {
+        Num1 = new Random().Next(100);
+        Num2 = new Random().Next(100);
+        opChooser = new Random().Next(4);
+        HintUsed = false;
+        var op = operations[opChooser];
+        if (op == "+")
+        {
+            result = Num1 + Num2;
+        }
+        else if (op == "-")
+        {
+            result = Num1 - Num2;
+        }
+        else if (op == "*")
+        {
+            result = Num1 * Num2;
+        }
+        else if (op == "/")
+        {
+            result = (Num1 / Num2);
+        }
+        result = Math.Round((decimal)result);
+        StateHasChanged();
+    }
+    public void GetHint()
+    {
+        var rangeMax = (result + new Random().Next(10,100));
+        var rangeMin = (result - new Random().Next(10,100));
+        hintRange = "Hint: The answer is between " + rangeMin + " and " + rangeMax;
+        HintUsed = true;
+        StateHasChanged();
+    }
+    public void UserGuess()
+    {
+
+        if(UserNum == result)
+        {
+            UserHasGuessedCorrect = true;
+            StateHasChanged();
+        } else 
+        {
+            UserHasGuessedCorrect = false;
+            StateHasChanged();
+        }
+        
+    }
+
+
+}
+
